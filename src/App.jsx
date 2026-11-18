@@ -1,25 +1,262 @@
 import { useEffect, useState } from 'react';
-import { FiArrowDown, FiArrowUpRight, FiDownload, FiMail } from 'react-icons/fi';
+import {
+  FiArrowDown,
+  FiArrowUpRight,
+  FiDownload,
+  FiMail,
+} from 'react-icons/fi';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { SiLeetcode } from 'react-icons/si';
+
 import Navbar from './components/Navbar.jsx';
 import ProjectCard from './components/ProjectCard.jsx';
 import { useTyping } from './components/useTyping.js';
 import { profile, roles, skills, projects } from './data.js';
-function Section({id, number, title, children}) { return <section id={id} className="section wrap"><div className="section-heading"><span>{number} /</span><h2>{title}</h2></div>{children}</section>; }
-function SocialLinks(){return <div className="socials"><a href={profile.github} target="_blank" rel="noreferrer"><FaGithub/> GitHub</a><a href={profile.linkedin} target="_blank" rel="noreferrer"><FaLinkedin/> LinkedIn</a><a href={profile.leetcode} target="_blank" rel="noreferrer"><SiLeetcode/> LeetCode</a></div>}
-export default function App(){
- const [theme,setTheme]=useState(()=>{try{return localStorage.getItem('portfolio-theme')==='dark'?'dark':'light'}catch{return 'light'}});
- const [filter,setFilter]=useState('All');
- const typed=useTyping(roles);
- useEffect(()=>{document.documentElement.dataset.theme=theme; try{localStorage.setItem('portfolio-theme',theme)}catch{}},[theme]);
- const visible=projects.filter(p=>filter==='All'||p.category===filter);
- return <><a className="skip" href="#main">Skip to content</a><Navbar theme={theme} toggleTheme={()=>setTheme(t=>t==='dark'?'light':'dark')}/><main id="main">
- <section id="home" className="hero wrap"><div><p className="eyebrow">Computer science undergraduate / 2028</p><h1>Hi, I'm<br/>{profile.name}<span>.</span></h1><p className="role"><span className="sr-only">Web Developer, Frontend Developer and Problem Solver</span><span aria-hidden="true" className="typing">{typed}<i/></span></p><p className="intro">I build web applications and enjoy solving problems with data structures and algorithms.</p><div className="actions"><a className="primary" href="#projects">Explore my work <FiArrowDown/></a><a className="secondary" href={`${import.meta.env.BASE_URL}resume.pdf`} download="Rahul_Kaintura_resume.pdf">Resume <FiDownload/></a></div><SocialLinks/></div><aside className="hero-note"><span className="eyebrow">Currently</span><h2>Learning by building.</h2><p>B.Tech Computer Science & Engineering<br/>{profile.university}</p><div className="metrics"><div><strong>{profile.cgpa}</strong><span>CGPA / 10</span></div><div><strong>{profile.solved}</strong><span>LeetCode problems</span></div></div></aside></section>
- <Section id="about" number="01" title="About me"><div className="about-grid"><div><p>I'm a computer science undergraduate interested in frontend and full-stack development. I practice building responsive applications, connecting interfaces to REST APIs and developing my problem-solving skills.</p><p>Beyond coursework, I work on personal software projects and practice coding regularly.</p></div><div className="education"><span className="eyebrow">Education</span><h3>{profile.university}</h3><p>B.Tech in Computer Science & Engineering</p><p>Expected graduation: {profile.graduation}</p><p>CGPA: {profile.cgpa}/10 · Class XII: 81% · Class X: 87%</p></div></div></Section>
- <Section id="skills" number="02" title="Technical skills"><div className="skill-grid">{Object.entries(skills).map(([group,items])=><div className="skill" key={group}><h3>{group}</h3><div className="tags">{items.map(item=><span key={item}>{item}</span>)}</div></div>)}</div></Section>
- <Section id="projects" number="03" title="Selected projects"><div className="filters" aria-label="Filter projects">{['All','Major','Practice'].map(type=><button key={type} aria-pressed={filter===type} className={filter===type?'selected':''} onClick={()=>setFilter(type)}>{type}</button>)}</div><div className="project-grid">{visible.map(p=><ProjectCard key={p.id} project={p}/>)}</div></Section>
- <Section id="achievements" number="04" title="Coding & achievements"><div className="achievement-grid"><article><SiLeetcode/><h3>{profile.solved} problems solved</h3><p>LeetCode · 50-day badge · Arrays, trees, graphs and dynamic programming.</p><a href={profile.leetcode} target="_blank" rel="noreferrer">View profile <FiArrowUpRight/></a></article><article><h3>3-star HackerRank</h3><p>Independent coding practice and software projects beyond coursework.</p><h3>Certifications</h3><p>Internshala Training Certificates.</p></article></div><p className="soft">Soft skills: Problem-solving, communication, teamwork, adaptability and time management.</p></Section>
- <Section id="contact" number="05" title="Get in touch"><p>Interested in discussing software development or a project? Feel free to reach out.</p><a className="email" href={`mailto:${profile.email}`}><FiMail/> {profile.email}</a><SocialLinks/></Section>
- </main><footer className="wrap footer"><span>© {new Date().getFullYear()} {profile.name}</span><a href="#home">Back to top ↑</a></footer></>;
+
+function Section({ id, number, title, children }) {
+  return (
+    <section id={id} className="section wrap">
+      <div className="section-heading">
+        <span>{number} /</span>
+        <h2>{title}</h2>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function SocialLinks() {
+  return (
+    <div className="socials">
+      <a href={profile.github} target="_blank" rel="noreferrer">
+        <FaGithub /> GitHub
+      </a>
+      <a href={profile.linkedin} target="_blank" rel="noreferrer">
+        <FaLinkedin /> LinkedIn
+      </a>
+      <a href={profile.leetcode} target="_blank" rel="noreferrer">
+        <SiLeetcode /> LeetCode
+      </a>
+    </div>
+  );
+}
+
+export default function App() {
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem('portfolio-theme') === 'dark'
+        ? 'dark'
+        : 'light';
+    } catch {
+      return 'light';
+    }
+  });
+
+  const [filter, setFilter] = useState('All');
+  const typed = useTyping(roles);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+
+    try {
+      localStorage.setItem('portfolio-theme', theme);
+    } catch {
+      // The theme still applies if local storage is unavailable.
+    }
+  }, [theme]);
+
+  const visible = projects.filter(
+    (project) => filter === 'All' || project.category === filter,
+  );
+
+  return (
+    <>
+      <a className="skip" href="#main">
+        Skip to content
+      </a>
+
+      <Navbar
+        theme={theme}
+        toggleTheme={() =>
+          setTheme((currentTheme) =>
+            currentTheme === 'dark' ? 'light' : 'dark',
+          )
+        }
+      />
+
+      <main id="main">
+        <section id="home" className="hero wrap">
+          <div>
+            <p className="eyebrow">Computer science undergraduate / 2028</p>
+
+            <h1>
+              Hi, I'm
+              <br />
+              {profile.name}
+              <span>.</span>
+            </h1>
+
+            <p className="role">
+              <span className="sr-only">
+                Web Developer, Frontend Developer and Problem Solver
+              </span>
+              <span aria-hidden="true" className="typing">
+                {typed}
+                <i />
+              </span>
+            </p>
+
+            <p className="intro">
+              I build web applications and enjoy solving problems with data
+              structures and algorithms.
+            </p>
+
+            <div className="actions">
+              <a className="primary" href="#projects">
+                Explore my work <FiArrowDown />
+              </a>
+              <a
+                className="secondary"
+                href={`${import.meta.env.BASE_URL}resume.pdf`}
+                download="Rahul_Kaintura_resume.pdf"
+              >
+                Resume <FiDownload />
+              </a>
+            </div>
+
+            <SocialLinks />
+          </div>
+
+          <aside className="hero-note">
+            <span className="eyebrow">Currently</span>
+            <h2>Learning by building.</h2>
+            <p>
+              B.Tech Computer Science &amp; Engineering
+              <br />
+              {profile.university}
+            </p>
+
+            <div className="metrics">
+              <div>
+                <strong>{profile.cgpa}</strong>
+                <span>CGPA / 10</span>
+              </div>
+              <div>
+                <strong>{profile.solved}</strong>
+                <span>LeetCode problems</span>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <Section id="about" number="01" title="About me">
+          <div className="about-grid">
+            <div>
+              <p>
+                I'm a computer science undergraduate interested in frontend and
+                full-stack development. I practice building responsive
+                applications, connecting interfaces to REST APIs and developing
+                my problem-solving skills.
+              </p>
+              <p>
+                Beyond coursework, I work on personal software projects and
+                practice coding regularly.
+              </p>
+            </div>
+
+            <div className="education">
+              <span className="eyebrow">Education</span>
+              <h3>{profile.university}</h3>
+              <p>B.Tech in Computer Science &amp; Engineering</p>
+              <p>Expected graduation: {profile.graduation}</p>
+              <p>CGPA: {profile.cgpa}/10 · Class XII: 81% · Class X: 87%</p>
+            </div>
+          </div>
+        </Section>
+
+        <Section id="skills" number="02" title="Technical skills">
+          <div className="skill-grid">
+            {Object.entries(skills).map(([group, items]) => (
+              <div className="skill" key={group}>
+                <h3>{group}</h3>
+                <div className="tags">
+                  {items.map((item) => (
+                    <span key={item}>{item}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Section>
+
+        <Section id="projects" number="03" title="Selected projects">
+          <div className="filters" aria-label="Filter projects">
+            {['All', 'Major', 'Practice'].map((type) => (
+              <button
+                key={type}
+                aria-pressed={filter === type}
+                className={filter === type ? 'selected' : ''}
+                onClick={() => setFilter(type)}
+              >
+                {type}
+              </button>
+            ))}
+          </div>
+
+          <div className="project-grid">
+            {visible.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+        </Section>
+
+        <Section id="achievements" number="04" title="Coding &amp; achievements">
+          <div className="achievement-grid">
+            <article>
+              <SiLeetcode />
+              <h3>{profile.solved} problems solved</h3>
+              <p>
+                LeetCode · 50-day badge · Arrays, trees, graphs and dynamic
+                programming.
+              </p>
+              <a href={profile.leetcode} target="_blank" rel="noreferrer">
+                View profile <FiArrowUpRight />
+              </a>
+            </article>
+
+            <article>
+              <h3>3-star HackerRank</h3>
+              <p>
+                Independent coding practice and software projects beyond
+                coursework.
+              </p>
+              <h3>Certifications</h3>
+              <p>Internshala Training Certificates.</p>
+            </article>
+          </div>
+
+          <p className="soft">
+            Soft skills: Problem-solving, communication, teamwork, adaptability
+            and time management.
+          </p>
+        </Section>
+
+        <Section id="contact" number="05" title="Get in touch">
+          <p>
+            Interested in discussing software development or a project? Feel
+            free to reach out.
+          </p>
+          <a className="email" href={`mailto:${profile.email}`}>
+            <FiMail /> {profile.email}
+          </a>
+          <SocialLinks />
+        </Section>
+      </main>
+
+      <footer className="wrap footer">
+        <span>© {new Date().getFullYear()} {profile.name}</span>
+        <a href="#home">Back to top ↑</a>
+      </footer>
+    </>
+  );
 }
